@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { UserServices } from "./user.service";
 import userValidationSchema from "./user.validate";
 
-const createStudent = async (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response) => {
     try {
         const user = req.body.user;
         // zod validation 
@@ -14,7 +14,7 @@ const createStudent = async (req: Request, res: Response) => {
             message: 'User is created successfully',
             data: result,
         });
-        
+
     } catch (err: any) {
         res.status(500).json({
             success: false,
@@ -22,4 +22,9 @@ const createStudent = async (req: Request, res: Response) => {
             error: err,
         });
     }
+};
+
+
+export const UserControllers = {
+    createUser
 };
