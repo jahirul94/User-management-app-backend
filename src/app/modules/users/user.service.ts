@@ -51,7 +51,7 @@ const updateUserData = async (data: TUser, userId: number) => {
         },
         { new: true, runValidators: true }
 
-    ).select('userId username fullName age email address isActive hobbies');
+    ).select('-password');
 
     return result;
 };
@@ -59,7 +59,7 @@ const updateUserData = async (data: TUser, userId: number) => {
 
 // service function for delete user 
 const deleteUserFromDB = async (userId: number) => {
-    const result = await User.findOneAndUpdate({ userId }, { $set: { isDeleted: true } });
+    const result = await User.deleteOne({ userId: userId });
     return result;
 };
 
@@ -71,5 +71,3 @@ export const UserServices = {
     updateUserData,
     deleteUserFromDB
 }
-
-// const result = await User.findOneAndUpdate({ userId: id },

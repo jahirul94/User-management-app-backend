@@ -11,11 +11,11 @@ export type TFullName = {
     lastName: string;
 };
 
-// export type TOrders = {
-//     productName: string;
-//     price: number;
-//     quantity: number
-// 
+export type TOrders = {
+    productName: string;
+    price: number;
+    quantity: number
+}
 
 
 export type TUser = {
@@ -28,7 +28,7 @@ export type TUser = {
     isActive: boolean;
     hobbies: Array<string>;
     address: TAddress;
-    // orders: TOrders
+    orders?: TOrders
 }
 
 // for creating statics 

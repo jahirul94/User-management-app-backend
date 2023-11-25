@@ -101,12 +101,25 @@ const updateUser = async (req: Request, res: Response) => {
 const deleteUser = async (req: Request, res: Response) => {
     try {
         const userId = req.params.userId;
-        const result = await UserServices.deleteUserFromDB(parseInt(userId));
-        res.status(200).json({
-            success: true,
-            message: "User deleted successfully!",
-            data: result,
-        });
+        // validate user isExist 
+        if (await User.isUserExists(Number(userId))) {
+            const result = await UserServices.deleteUserFromDB(parseInt(userId));
+            res.status(200).json({
+                success: true,
+                message: "User deleted successfully!",
+                data: result,
+            });
+        }
+        else {
+            res.status(500).json({
+                success: false,
+                message: "User not found",
+                error: {
+                    code: 404,
+                    description: "User not found"
+                }
+            })
+        }
 
     } catch (err: any) {
         res.status(500).json({
