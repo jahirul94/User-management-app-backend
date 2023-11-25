@@ -167,7 +167,7 @@ const createProduct = async (req: Request, res: Response) => {
 const getSpecificUserProduct = async (req: Request, res: Response) => {
     try {
         const userId = req.params.userId;
-        const result = await UserServices.getSpecificUsersOrdersFromDB(parseInt(userId));
+        const result = await UserServices.getSpecificUsersOrdersFromDB(Number(userId));
         res.status(200).json({
             success: true,
             message: 'Order fetched successfully!',
@@ -187,6 +187,29 @@ const getSpecificUserProduct = async (req: Request, res: Response) => {
 }
 
 
+const getUserProductTotalPrice = async (req: Request, res: Response) => {
+    try {
+        const userId = req.params.userId;
+        const result = await UserServices.getUserOrdersTotalPrice(Number(userId));
+        res.status(200).json({
+            success: true,
+            message: 'Total price calculated successfully!',
+            data: result,
+        });
+
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: "something went wrong",
+            error: {
+                code: 404,
+                description: "there are some error to calculate total price!"
+            },
+        });
+    }
+}
+
+
 
 
 
@@ -197,5 +220,6 @@ export const UserControllers = {
     updateUser,
     deleteUser,
     createProduct,
-    getSpecificUserProduct
+    getSpecificUserProduct,
+    getUserProductTotalPrice
 };

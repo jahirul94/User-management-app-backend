@@ -87,6 +87,14 @@ const getSpecificUsersOrdersFromDB = async (userId: number) => {
     return result;
 };
 
+const getUserOrdersTotalPrice = async (userId: number) => {
+    const result = await User.aggregate([
+        { $match: { userId } },
+        { $group: { _id: "$orders.price" }}
+    ])
+    return result;
+};
+
 
 
 
@@ -100,5 +108,6 @@ export const UserServices = {
     updateUserData,
     deleteUserFromDB,
     addProductsToDB,
-    getSpecificUsersOrdersFromDB
+    getSpecificUsersOrdersFromDB,
+    getUserOrdersTotalPrice
 }
