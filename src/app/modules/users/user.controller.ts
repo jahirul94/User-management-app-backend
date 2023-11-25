@@ -75,6 +75,10 @@ const updateUser = async (req: Request, res: Response) => {
     try {
         const userId = req.params.userId;
         const data = req.body;
+        if (await User.isUserExists(parseInt(userId))) {
+            throw new Error('User exists!');
+        }
+
         const result = await UserServices.updateUserData(data, parseInt(userId));
         res.status(200).json({
             success: true,
@@ -95,9 +99,33 @@ const updateUser = async (req: Request, res: Response) => {
 };
 
 
+
+// controller function for update user details
+const deleteUser = async (req: Request, res: Response) => {
+    try {
+        const userId = req.params.userId;
+
+        const result = await UserServices.deleteUserFromDB(parseInt(userId));
+        res.status(200).json({
+            success: true,
+            message: "User deleted successfully!",
+            data: result,
+        });
+
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.message,
+            error: err,
+        });
+    }
+};
+
+
 export const UserControllers = {
     createUser,
     getAllUsers,
     getSingleUser,
-    updateUser
+    updateUser,
+    deleteUser
 };

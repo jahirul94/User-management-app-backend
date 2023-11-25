@@ -55,9 +55,16 @@ const updateUserData = async (data: TUser, userId: number) => {
 
 
 
+const deleteUserFromDB = async (userId: number) => {
+    const result = await User.updateOne({ userId }, { isDeleted: true });
+    return result;
+};
+
+
 export const UserServices = {
     createStudentIntoDB,
     getAllUserFromDB,
     getSpecificUserFromDB,
-    updateUserData
+    updateUserData,
+    deleteUserFromDB
 }
