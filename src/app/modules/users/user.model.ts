@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
-import { TAddress, TFullName, TUser, UserModel } from "./user.interface";
+import { TAddress, TFullName, TOrders, TUser, UserModel } from "./user.interface";
 import bcrypt from "bcrypt"
+import config from "../../config";
 
 const addressSchema = new Schema<TAddress>({
     street: { type: String, required: true },
@@ -22,11 +23,11 @@ const fullNameSchema = new Schema<TFullName>({
     },
 });
 
-// const ordersSchema = new Schema<TOrders>({
-//     productName: { type: String, required: true },
-//     price: { type: Number, required: true },
-//     quantity: { type: Number, required: true },
-// });
+const ordersSchema = new Schema<TOrders>({
+    productName: { type: String, required: true },
+    price: { type: Number, required: true },
+    quantity: { type: Number, required: true },
+});
 
 const userSchema = new Schema<TUser, UserModel>({
     userId: { type: Number, required: true, unique: true },
@@ -46,7 +47,7 @@ const userSchema = new Schema<TUser, UserModel>({
     isActive: { type: Boolean, required: true },
     hobbies: { type: [String], required: true },
     address: { type: addressSchema, required: true },
-    // orders: { type: ordersSchema, required: true },
+    orders: { type: ordersSchema, required: true },
 });
 
 userSchema.pre("save", async function (next) {
@@ -54,7 +55,7 @@ userSchema.pre("save", async function (next) {
     user.password = await bcrypt.hash(
         user.password,
         // TODO: make it hide 
-        Number(12),
+        Number(config.bcrypt_salt_number)
     );
     next();
 

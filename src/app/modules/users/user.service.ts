@@ -1,4 +1,4 @@
-import { TUser } from "./user.interface";
+import { TOrders, TUser } from "./user.interface";
 import { User } from "./user.model";
 
 
@@ -63,11 +63,42 @@ const deleteUserFromDB = async (userId: number) => {
     return result;
 };
 
+// service function for delete user 
+const addProductsToDB = async (userId: number, order: TOrders) => {
+    const result = await User.findOneAndUpdate(
+        { userId: userId },
+        {
+            $addToSet: {
+                orders: order
+            }
+        },
+        { upsert: true, new: true }
+    )
+    return result;
+};
+
+
+
+const getSpecificUsersOrdersFromDB = async (userId: number) => {
+    const [result] = await User.aggregate([
+        { $match: { userId } },
+        { $project: { orders: 1, _id: 0 } }
+    ])
+    return result;
+};
+
+
+
+
+
+
 
 export const UserServices = {
     createUserIntoDB,
     getAllUserFromDB,
     getSpecificUserFromDB,
     updateUserData,
-    deleteUserFromDB
+    deleteUserFromDB,
+    addProductsToDB,
+    getSpecificUsersOrdersFromDB
 }

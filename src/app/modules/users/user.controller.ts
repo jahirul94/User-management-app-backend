@@ -130,11 +130,72 @@ const deleteUser = async (req: Request, res: Response) => {
     }
 };
 
+// order management 
+const createProduct = async (req: Request, res: Response) => {
+    const userId = req.params.userId;
+    const order = req.body;
+    try {
+        if (await User.isUserExists(Number(userId))) {
+            // save into db 
+            const result = await UserServices.addProductsToDB(Number(userId), order);
+            res.status(200).json({
+                success: true,
+                message: 'Order created successfully!',
+                data: null,
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: "User not found",
+                error: {
+                    code: 404,
+                    description: "User not found"
+                }
+            })
+        }
+
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.message,
+            error: err,
+        });
+    }
+
+}
+
+const getSpecificUserProduct = async (req: Request, res: Response) => {
+    try {
+        const userId = req.params.userId;
+        const result = await UserServices.getSpecificUsersOrdersFromDB(parseInt(userId));
+        res.status(200).json({
+            success: true,
+            message: 'Order fetched successfully!',
+            data: result,
+        });
+
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: "something went wrong",
+            error: {
+                code: 404,
+                description: "Product not found!"
+            },
+        });
+    }
+}
+
+
+
+
 
 export const UserControllers = {
     createUser,
     getAllUsers,
     getSingleUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    createProduct,
+    getSpecificUserProduct
 };
