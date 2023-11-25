@@ -3,7 +3,7 @@ import { User } from "./user.model";
 
 
 // user create function 
-const createStudentIntoDB = async (user: TUser) => {
+const createUserIntoDB = async (user: TUser) => {
     const result = await User.create(user);
     return result;
 };
@@ -27,14 +27,15 @@ const getSpecificUserFromDB = async (userId: number) => {
 
 
 
-// function for update users data
+// service function for update users data
 const updateUserData = async (data: TUser, userId: number) => {
-    const result = await User.updateOne(
-        { $match: { userId } },
+    const result = await User.findOneAndUpdate(
+        { userId: userId },
         {
             $set: {
                 userId: data.userId,
                 username: data.username,
+                password: data.password,
                 "fullName.firstName": data.fullName.firstName,
                 "fullName.lastName": data.fullName.lastName,
                 age: data.age,
@@ -47,24 +48,28 @@ const updateUserData = async (data: TUser, userId: number) => {
                 "address.city": data.address.city,
                 "address.country": data.address.country,
             }
-        }
-    );
+        },
+        { new: true, runValidators: true }
+
+    ).select('userId username fullName age email address isActive hobbies');
 
     return result;
 };
 
 
-
+// service function for delete user 
 const deleteUserFromDB = async (userId: number) => {
-    const result = await User.updateOne({ userId }, { isDeleted: true });
+    const result = await User.findOneAndUpdate({ userId }, { $set: { isDeleted: true } });
     return result;
 };
 
 
 export const UserServices = {
-    createStudentIntoDB,
+    createUserIntoDB,
     getAllUserFromDB,
     getSpecificUserFromDB,
     updateUserData,
     deleteUserFromDB
 }
+
+// const result = await User.findOneAndUpdate({ userId: id },
