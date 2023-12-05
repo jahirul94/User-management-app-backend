@@ -28,7 +28,8 @@ export type TUser = {
     isActive: boolean;
     hobbies: Array<string>;
     address: TAddress;
-    orders?: Array<TOrders>
+    orders?: Array<TOrders>;
+    isDeleted?: boolean;
 }
 
 // for creating statics 

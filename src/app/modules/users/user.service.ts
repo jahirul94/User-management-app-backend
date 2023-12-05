@@ -4,13 +4,19 @@ import { User } from "./user.model";
 
 // user create function 
 const createUserIntoDB = async (user: TUser) => {
-    const result = await User.create(user);
+
+    if (await User.isUserExists(user.userId)) {
+        throw new Error('The user(userId) already exists!');
+    }
+    const createdUser = await User.create(user);
+    const result = await User.findOne({ userId: createdUser.userId }).select("-password -isDeleted -__v")
     return result;
 };
 
 // get all users function 
 const getAllUserFromDB = async () => {
     const result = await User.aggregate([
+        { $match: { isDeleted: { $ne: true } } },
         { $project: { username: 1, fullName: 1, age: 1, email: 1, address: 1 } }
     ]);
     return result;
@@ -18,10 +24,7 @@ const getAllUserFromDB = async () => {
 
 // get specific user function 
 const getSpecificUserFromDB = async (userId: number) => {
-    const result = await User.aggregate([
-        { $match: { userId } },
-        { $project: { userId: 1, username: 1, fullName: 1, age: 1, email: 1, address: 1, isActive: 1 } }
-    ]);
+    const result = await User.findOne({ userId }).select("userId username fullName age email address isActive")
     return result;
 };
 
@@ -59,7 +62,7 @@ const updateUserData = async (data: TUser, userId: number) => {
 
 // service function for delete user 
 const deleteUserFromDB = async (userId: number) => {
-    const result = await User.deleteOne({ userId: userId });
+    const result = await User.updateOne({ userId: userId }, { isDeleted: true });
     return result;
 };
 
@@ -88,11 +91,23 @@ const getSpecificUsersOrdersFromDB = async (userId: number) => {
 };
 
 const getUserOrdersTotalPrice = async (userId: number) => {
-    const result = await User.aggregate([
+    // get total price using mongoose aggregation
+    const totalPrice = User.aggregate([
         { $match: { userId } },
-        { $group: { _id: "$orders.price" }}
+        { $unwind: '$orders' },
+        {
+            $group: {
+                _id: null,
+                totalPrice: {
+                    $sum: { $multiply: ['$orders.price', '$orders.quantity'] },
+                },
+            },
+
+        },
+        { $project: { _id: 0 } }
     ])
-    return result;
+
+    return totalPrice;
 };
 
 

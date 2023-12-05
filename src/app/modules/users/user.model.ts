@@ -47,9 +47,14 @@ const userSchema = new Schema<TUser, UserModel>({
     isActive: { type: Boolean, required: true },
     hobbies: { type: [String], required: true },
     address: { type: addressSchema, required: true },
-    orders: { type: ordersSchema, required: true },
+    orders: { type: ordersSchema },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    },
 });
 
+// middleware 
 userSchema.pre("save", async function (next) {
     const user = this;
     user.password = await bcrypt.hash(
@@ -58,21 +63,18 @@ userSchema.pre("save", async function (next) {
         Number(config.bcrypt_salt_number)
     );
     next();
-
 })
 
-userSchema.post('save', function (doc, next) {
-    doc.password = '';
+userSchema.pre('findOne', function (next) {
+    this.find({ isDeleted: { $ne: true } });
     next();
 });
-
 
 
 userSchema.statics.isUserExists = async function (id: number) {
     const existingUser = await User.findOne({ userId: id });
     return existingUser;
 };
-
 
 
 export const User = model<TUser, UserModel>('User', userSchema);

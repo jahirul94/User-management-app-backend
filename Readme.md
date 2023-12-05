@@ -1,14 +1,3 @@
-* For run this app locally you will be some config details on .env file
-- PORT
-- DATABASE_URL
-- BCRYPT_SALT_NUMBER
-- if you will add the following config on the .env file then , You can run this app with the npm run nodemon command
-
-
-
-
-
-
 * deployment Link : https://express-app-advance-g7iyrr6o0-jahirul94.vercel.app
 
 - on this app all router are created on route page

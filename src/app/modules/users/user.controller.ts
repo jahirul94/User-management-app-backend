@@ -51,6 +51,9 @@ const getSingleUser = async (req: Request, res: Response) => {
     try {
         const userId = req.params.userId;
         const result = await UserServices.getSpecificUserFromDB(parseInt(userId));
+        if (!result) {
+            throw new Error("user not found")
+        }
         res.status(200).json({
             success: true,
             message: 'User fetched successfully!',
@@ -103,11 +106,11 @@ const deleteUser = async (req: Request, res: Response) => {
         const userId = req.params.userId;
         // validate user isExist 
         if (await User.isUserExists(Number(userId))) {
-            const result = await UserServices.deleteUserFromDB(parseInt(userId));
+            const result = await UserServices.deleteUserFromDB(Number(userId));
             res.status(200).json({
                 success: true,
                 message: "User deleted successfully!",
-                data: result,
+                data: null,
             });
         }
         else {
@@ -194,7 +197,7 @@ const getUserProductTotalPrice = async (req: Request, res: Response) => {
         res.status(200).json({
             success: true,
             message: 'Total price calculated successfully!',
-            data: result,
+            data: result[0],
         });
 
     } catch (error: any) {
